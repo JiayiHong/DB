@@ -14,10 +14,6 @@ class Column<T extends Comparable<? super T>> {
 		return this.type;
 	}
 
-	public List<T> setColumn() {
-		return column;
-	}
-
 	void addData(T data) {
 		column.add(data);
 	}
