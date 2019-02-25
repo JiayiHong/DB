@@ -1,6 +1,6 @@
 import java.util.*;
 
-class Column<T extends Comparable<? super T>> {
+class Column<T> {
 
 	private String type;
 	private List<T> column = new ArrayList<T>();
@@ -17,7 +17,7 @@ class Column<T extends Comparable<? super T>> {
 	void addData(T data) {
 		column.add(data);
 	}
-
+ 
 
 
 //	===============TESTING===============
