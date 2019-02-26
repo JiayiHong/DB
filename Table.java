@@ -17,13 +17,13 @@ class Table {
 	}
 
 	// Initialize the table with 
-	void Table(Column... columns) {
-		for (Column c : columns) {
-			cols.add(c);
-		}
+	void addTableColumn(Column column) {
+		cols.add(column);
 	}
 
-	
+	int getColumnsNumber() {
+		return cols.size();
+	}
 	
 
 

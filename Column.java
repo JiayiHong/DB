@@ -5,8 +5,8 @@ class Column<T> {
 	private String type;
 	private List<T> column = new ArrayList<T>();
 
-
 	Column (String type) {
+
 		this.type = type;
 	}
 
@@ -18,7 +18,7 @@ class Column<T> {
 		column.add(data);
 	}
  
-
+	
 
 //	===============TESTING===============
 

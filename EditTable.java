@@ -4,7 +4,7 @@ class EditTable {
 
 	Map<String, Table> tables = new HashMap<String, Table>();
 	Table current;
-
+	private enum dataType {number, text};
 
 	// Create a new table
 	void createTable(String name) {
@@ -19,13 +19,25 @@ class EditTable {
 
 	void defineType(String typein) {
 		if (typein == null || typein.isEmpty()) {
-			System.out.println("Please type in every column's type.");
+			System.out.println("Please type in every column's type with number or text.");
 			return;
 		}
 		String[] words = typein.split(" ");
-		current.Table()
+		dataType type;
+		for (String word : words) {
+			type = dataType.valueOf(word);
+			switch (type) {
+				case number:
+					current.addTableColumn(new Column("double"));
+					break;
+				case text:
+					current.addTableColumn(new Column("String"));
+					break;
+				default:
+					System.out.println("Please type in number or text.");
+			}
+		}
 	}
-
 
 	// Locate to the specific table
 	void switchTable(String name) {
@@ -41,6 +53,8 @@ class EditTable {
 		}
 	}
 
+
+	// Add table's data
 
 
 
