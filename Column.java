@@ -6,7 +6,6 @@ class Column<T> {
 	private List<T> column = new ArrayList<T>();
 
 	Column (String type) {
-
 		this.type = type;
 	}
 
