@@ -25,6 +25,10 @@ class Table {
 		return header;
 	}
 
+	Records getRecords() {
+		return records;
+	}
+
 	boolean addTableData(String[] toadd) {
 		if (toadd.length == header.length) {
 			if (records.addRecord(toadd))	return true;
@@ -75,7 +79,20 @@ class Table {
 		return true;
 	}
 	
-	 
+	void printTable() {
+		printStringArray(header);
+		for (int i = 0; i < records.getRecordsNumber(); i++) {
+			printStringArray(records.getCertainRecord(i));
+		}
+	}
+
+	void printStringArray(String[] toprint) {
+		System.out.print("|\t");
+		for (String string : toprint) {
+			System.out.print(string + "\t|\t");
+		}
+		System.out.println();
+	}
 
 
 

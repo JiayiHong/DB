@@ -9,16 +9,17 @@ class File {
 
     File (Table table) {
         this.table = table;
+        fileName = "databases/"+ table.getName() + ".txt";
     }
 
-    void getFileName(String name) {
+    void setFileName(String name) {
        fileName = name;
     }
 
     boolean writeToFile() {
         try{
             outputStream = new PrintWriter(fileName);
-            printTable();
+            saveTable();
             outputStream.close();
             return true;
         } catch (FileNotFoundException e) {
@@ -27,21 +28,19 @@ class File {
         }
     }
 
-    void printStringArray(String[] toPrint) {
-        outputStream.print("|");
+    void saveStringArray(String[] toPrint) {
         for(String string : toPrint) {
-            outputStream.print("\t" + string + "\t|");
+            outputStream.print(string + ",");
         }
         outputStream.println();
     }
 
-    void printTable(){
-        printStringArray(table.getHeader());
+    void saveTable(){
+        saveStringArray(table.getHeader());
         for (int i = 1; i <= table.records.getRecordsNumber(); i++) {
-            printStringArray(table.getTableRow(i).get(0));
+            saveStringArray(table.getTableRow(i).get(0));
         }
     }
-
 
 
 
@@ -70,7 +69,7 @@ class File {
         table.addTableData(new String[]{"Mary", "13"});
         table.addTableData(new String[]{"Frank", "25"});
         table.addTableData(new String[]{"Bob", "22"});
-        getFileName("testOutput.txt");
+        setFileName("testfile/testOutput.txt");
         assert(writeToFile());
     }
 
