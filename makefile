@@ -6,6 +6,7 @@ Records = Records.java
 File = File.java Table.java
 Databases = Databases.java Table.java Records.java
 InputTableName = InputTableName.java
+AlertBox = AlertBox.java
 
 %: %.java
 	javac $(FLAGS) $($@)

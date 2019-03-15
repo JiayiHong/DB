@@ -1,9 +1,12 @@
 import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 class Table {
 
 	private String name;
 	private String[] header;
+	private String[] type;
 	Records records;
 
 	// Create a table with new name
@@ -15,6 +18,12 @@ class Table {
 	void setHeader(String... header) {
 		this.header = header;
 		records = new Records(header.length);
+	}
+
+	boolean setType(String... type) {
+		this.type = type;
+		if(header.length != type.length)	return false;
+		return true;
 	}
 
 	String getName(){
@@ -31,12 +40,17 @@ class Table {
 
 	boolean addTableData(String[] toadd) {
 		if (toadd.length == header.length) {
+
 			if (records.addRecord(toadd))	return true;
 			else System.out.println("Duplicate records!");
 		}
 		else System.out.println("Please input "+ 
 								header.length + " data in a row");
 		return false;
+	}
+
+	void checkDataType(String[] toadd) {
+
 	}
 
 	List<String[]> getTableRow(int... number) {
@@ -78,7 +92,38 @@ class Table {
 		}
 		return true;
 	}
+
+	boolean checkNum(String string) {
+		return string.matches("-?\\d+(\\.\\d+)?");
+	}
 	
+	boolean checkDate(String string) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(string.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
+	}
+
+	boolean checkCurrency(String string) {
+		Currency currency = Currency.getInstance(Locale.UK);
+		String symbol = currency.getSymbol();
+		if(string.startsWith(symbol) || string.endsWith(symbol)){
+    		return true;
+		}
+    	return false;
+	}
+
+
+
+
+
+
+//	===============TESTING===============
+
 	void printTable() {
 		printStringArray(header);
 		for (int i = 0; i < records.getRecordsNumber(); i++) {
@@ -93,10 +138,6 @@ class Table {
 		}
 		System.out.println();
 	}
-
-
-
-//	===============TESTING===============
 
 	public static void main(String[] args) {
 		Table program = new Table("new table");
@@ -118,6 +159,7 @@ class Table {
 		testGetTableRow();
 		testDeleteRow();
 		testUpdateRow();
+		testStringType();
 	}
 
 	private void testName() {
@@ -162,4 +204,22 @@ class Table {
 		assert(updateRow(1,1,"Bob"));
 		assert(getTableRow(1) != null);
 	}
+
+	private void testStringType() {
+		assert(checkNum("2.2"));
+		assert(checkNum("0"));
+		assert(checkNum("-1"));
+		assert(checkNum("-505"));
+		assert(checkNum("2.02"));
+		assert(!checkNum("2.2.2"));
+		assert(!checkNum("-.43"));
+		assert(checkDate("14-03-2019"));
+		assert(!checkDate("29-02-2019"));
+		assert(!checkDate("44-03-2019"));
+		assert(!checkDate("14032019"));
+		assert(checkCurrency("£20.0"));
+		assert(!checkCurrency("20.0"));
+		assert(!checkCurrency("-£20.0"));
+	}
+
 }

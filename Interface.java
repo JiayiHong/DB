@@ -27,6 +27,7 @@ public class Interface extends Application{
 	Button createTable, refresh;
 	Databases database = new Databases();
 	TableView<String[]> table;
+	Table operatingTable;
 
 	public void start(Stage stage) {
 
@@ -77,6 +78,7 @@ public class Interface extends Application{
 			String tablename = entry.getKey();
 			Table currentTable = entry.getValue();
 			Button button = new Button(tablename);
+			operatingTable = currentTable;
 			button.setOnAction(e -> {
 				rightLayout.getChildren().clear();
 				Label tableNameLabel = new Label(tablename);
