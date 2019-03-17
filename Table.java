@@ -7,6 +7,7 @@ class Table {
 	private String name;
 	private String[] header;
 	private String[] type;
+	private int[] keys;
 	Records records;
 
 	// Create a table with new name
@@ -21,9 +22,19 @@ class Table {
 	}
 
 	boolean setType(String... type) {
-		this.type = type;
 		if(header.length != type.length)	return false;
+		this.type = type;
+		if(records.addRecord(type));
 		return true;
+	}
+
+	void setKey(int... keys) {
+		this.keys = keys;
+		records.setKeys(keys);
+	}
+
+	int[] getKey() {
+		return keys;
 	}
 
 	String getName(){
@@ -34,23 +45,30 @@ class Table {
 		return header;
 	}
 
+	String[] getType() {
+		return type;
+	}
+
 	Records getRecords() {
 		return records;
 	}
 
-	boolean addTableData(String[] toadd) {
-		if (toadd.length == header.length) {
-
+	boolean addTableData(String... toadd) {
+		if (checkDataType(toadd)) {
 			if (records.addRecord(toadd))	return true;
-			else System.out.println("Duplicate records!");
+			// else System.out.println("Duplicate records!");
 		}
-		else System.out.println("Please input "+ 
-								header.length + " data in a row");
 		return false;
 	}
 
-	void checkDataType(String[] toadd) {
-
+	boolean checkDataType(String... toadd) {
+		for (int i = 0; i < header.length; i++) {
+			if ((type[i].equals("number") && !checkNum(toadd[i])) ||
+				(type[i].equals("date") && !checkDate(toadd[i])) ||
+				(type[i].equals("currency") && !checkCurrency(toadd[i])))
+				return false;
+		}
+		return true;
 	}
 
 	List<String[]> getTableRow(int... number) {
@@ -58,7 +76,7 @@ class Table {
 		List<String[]> list = new ArrayList<String[]>();
 		for (int n : number ) {
 			if (!checkRowIndexValid(n)) return null;
-			row = records.getCertainRecord(n-1);
+			row = records.getCertainRecord(n);
 			list.add(row);
 		} 
 		return list;
@@ -67,7 +85,7 @@ class Table {
 	boolean deleteRow(int... number) {
 		for (int n : number) {
 			if (!checkRowIndexValid(n)) return false;
-			records.removeCertainRecord(n-1);
+			records.removeCertainRecord(n);
 		}
 		return true;
 	}
@@ -75,12 +93,12 @@ class Table {
 	boolean updateRow(int rownumber, int colnumber, String toupdate) {
 		if (!checkRowIndexValid(rownumber) || !checkColIndexValid(colnumber))
 			return false;
-		records.updateCertainRecord(rownumber-1, colnumber-1, toupdate);
+		records.updateCertainRecord(rownumber, colnumber-1, toupdate);
 		return true;
 	}
 
 	boolean checkRowIndexValid(int number) {
-		if (number > records.getRecordsNumber() || number <= 0) {
+		if (number >= records.getRecordsNumber() || number < 1) {
 			return false;
 		}
 		return true;
@@ -160,6 +178,7 @@ class Table {
 		testDeleteRow();
 		testUpdateRow();
 		testStringType();
+		testCheckType();
 	}
 
 	private void testName() {
@@ -168,16 +187,18 @@ class Table {
 
 	private void testHeader() {
 		setHeader("name", "age");
+		records.setKeys(0);
 		assert(header[0] == "name");
 		assert(header[1] == "age");
 	}
 
 	private void testAddTableData() {
+		assert(setType("text", "number"));
 		assert(addTableData(new String[]{"John", "10"}));
 		assert(addTableData(new String[]{"Mary", "13"}));
 		assert(addTableData(new String[]{"Frank", "25"}));
 		assert(!addTableData(new String[]{"John", "10"}));
-		assert(!addTableData(new String[]{"John", "10", "40"}));
+		assert(!addTableData(new String[]{"John", "f1"}));
 		assert(!addTableData(new String[]{"Mary", "13"}));
 	}
 
@@ -192,17 +213,17 @@ class Table {
 		assert(!deleteRow(0));
 		assert(getTableRow(3) != null);
 		assert(deleteRow(1));
-		assert(getTableRow(3) == null);
+		assert(getTableRow(4) == null);
 	}
 
 	private void testUpdateRow() {
 		assert(!updateRow(0,1,"Bob"));
-		assert(!updateRow(3,1,"Bob"));
-		assert(!updateRow(1,0,"22"));
-		assert(!updateRow(1,3,"22"));
-		assert(updateRow(1,2,"22"));
-		assert(updateRow(1,1,"Bob"));
-		assert(getTableRow(1) != null);
+		assert(!updateRow(4,1,"Bob"));
+		assert(!updateRow(2,0,"22"));
+		assert(!updateRow(2,3,"22"));
+		assert(updateRow(2,2,"22"));
+		assert(updateRow(2,1,"Bob"));
+		assert(getTableRow(2) != null);
 	}
 
 	private void testStringType() {
@@ -220,6 +241,20 @@ class Table {
 		assert(checkCurrency("£20.0"));
 		assert(!checkCurrency("20.0"));
 		assert(!checkCurrency("-£20.0"));
+	}
+
+	private void testCheckType() {
+		assert(!setType("number"));
+		assert(checkDataType("Bob","40.5"));
+		assert(!checkDataType("Bob","Ann"));
+		assert(!checkDataType("Bob","fr3"));
+		assert(!checkDataType("Bob","£20"));
+		assert(!addTableData("Bob", "A1"));
+		assert(!addTableData("Bob", "2f"));
+		assert(setType("date", "currency"));
+		assert(checkDataType("12-04-2019","£10"));
+		assert(!checkDataType("Bob","22"));
+		assert(!checkDataType("12-04-2019","22"));
 	}
 
 }

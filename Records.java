@@ -4,11 +4,16 @@ class Records {
     private int dataNumber; // the number of data every row has
     private int recordNumber; // the number of rows
     private List<String[]> records;
+    private int[] keys;
 
     Records(int dataNumber) {
         this.dataNumber = dataNumber;
         records = new ArrayList<String[]>();
         recordNumber = 0;
+    }
+
+    void setKeys(int... keys) {
+        this.keys = keys;
     }
 
     boolean addRecord(String[] toadd) {
@@ -27,16 +32,17 @@ class Records {
     // Looking for duplicate records
     boolean checkDuplicateRecord(String[] toadd) {
         int count = 0;
+        // if (records == null) return false;
         for (String[] current : records) {
-            for (int i = 0; i < toadd.length; i++) {
-                if (current[i].equals(toadd[i]))
+            for (int check : keys) {
+                if (toadd[check].equals(current[check]))
                     count ++;
             }
-            if (count == toadd.length)  return true;
-            else    count = 0;
+            if (count == keys.length) return true;
+            else count = 0;
         }
         return false;
-    }    
+    }
 
     void removeCertainRecord(int number) {
         records.remove(number);
@@ -76,6 +82,7 @@ class Records {
     }
 
     private void testInitial() {
+        setKeys(0);
         assert(dataNumber == 2);
         assert(recordNumber == 0);
     }
@@ -85,14 +92,14 @@ class Records {
         assert(recordNumber == 1);
         assert(addRecord(new String[]{"Wanda", "fish"}));
         assert(recordNumber == 2);
-        assert(addRecord(new String[]{"Fido", "23"}));
+        assert(addRecord(new String[]{"Fdo", "ab123"}));
         assert(recordNumber == 3);
         assert(!addRecord(new String[]{"Fido", "ab123"}));
         assert(recordNumber == 3);
     }
 
     private void testDuplicate() {
-        assert(checkDuplicateRecord(new String[]{"Fido", "ab123"}));
+        assert(checkDuplicateRecord(new String[]{"Fido", "ab"}));
         assert(checkDuplicateRecord(new String[]{"Fido", "23"}));
         assert(!checkDuplicateRecord(new String[]{"Fio", "ab123"}));
     }

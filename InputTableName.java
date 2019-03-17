@@ -6,6 +6,8 @@ import javafx.geometry.*;
 import java.lang.*;
 import javafx.scene.control.Button;
 import javafx.event.*;
+import java.util.*;
+
 
 class InputTableName {
 
@@ -29,6 +31,11 @@ class InputTableName {
         VBox vbHeader = new VBox(10);
         vbHeader.getChildren().addAll(header, inputHeader);
 
+        Label key = new Label("Key Columns:");
+        TextField inputKey = new TextField();
+        VBox vbKey = new VBox(10);
+        vbKey.getChildren().addAll(key, inputKey);
+
         // Get columns' types of the table
         Label type = new Label("Table type:" + "\n" +
                         "(Use , to seperate columns)");
@@ -43,16 +50,25 @@ class InputTableName {
         confirm.setOnAction(e -> {
             String tableName = inputName.getText();
             String getHeader = inputHeader.getText();
+            String getKey = inputKey.getText();
             String getType = inputType.getText();
             String[] tableHeader = getHeader.split(",");
+            String[] tableKey = getKey.split(",");
             String[] tableType = getType.split(",");
-            if(!tableName.trim().isEmpty() && !getHeader.trim().isEmpty() &&
-            !getType.trim().isEmpty() ){
+            if (tableHeader.length != tableType.length) 
+                AlertBox.display("Error","Type in "+tableHeader.length+" types");
+            else if (!checkKey(tableKey, tableHeader))
+                AlertBox.display("Error","Key(s)' name(s) should be exactly the same with columns.");
+            else if (!checkType(tableType))
+                AlertBox.display("Error","Types include number, text, date and currency.");
+            else if (!tableName.trim().isEmpty() && !getHeader.trim().isEmpty() &&
+                    !getType.trim().isEmpty() ){
                 Table newTable = new Table(tableName);
                 newTable.setHeader(tableHeader);
                 newTable.setType(tableType);
+                newTable.setKey(getKeyNumber(tableKey, tableHeader));
                 File createFile = new File(newTable);
-                if(!createFile.writeToFile()) {
+                if (!createFile.writeToFile()) {
                     AlertBox.display("Alert","Save Table Failed!");
                 };
             }
@@ -69,7 +85,7 @@ class InputTableName {
         buttons.setAlignment(Pos.CENTER);
 
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(hbName, vbHeader, vbType, buttons);
+        layout.getChildren().addAll(hbName, vbHeader, vbKey, vbType, buttons);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20,20,20,20));
         layout.setMargin(vbHeader, new Insets(20,0,10,0));
@@ -79,6 +95,38 @@ class InputTableName {
         window.setScene(scene);
         window.showAndWait();
 
+    }
+
+    static boolean checkType(String... type) {
+        
+        for (String str : type) {
+            System.out.println(str);
+            if (!str.equals("number") && !str.equals("text") 
+                && !str.equals("date") && !str.equals("currency"))
+                return false;
+        }
+        return true;
+    }
+
+    static int[] getKeyNumber(String[] keys, String... header) {
+        int[] number = new int[keys.length];
+        int j = 0;
+        for (String str : keys) {
+            for (int i = 0; i < header.length; i++) {
+                if (str.equals(header[i]))  {
+                    number[j] = i;
+                    j++;
+                }
+            }
+        }
+        return number;
+    }
+
+    static boolean checkKey(String[] keys, String... header) {
+        for (String str : keys) {
+            if (!Arrays.asList(header).contains(str))    return false;
+        }
+        return true;
     }
 
 }

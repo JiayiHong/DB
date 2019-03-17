@@ -37,7 +37,10 @@ class File {
 
     void saveTable(){
         saveStringArray(table.getHeader());
-        for (int i = 1; i <= table.records.getRecordsNumber(); i++) {
+        saveStringArray(table.getRecords().getCertainRecord(0));
+        for (int i : table.getKey())
+            outputStream.println(i + ",");
+        for (int i = 1; i < table.records.getRecordsNumber(); i++) {
             saveStringArray(table.getTableRow(i).get(0));
         }
     }
@@ -65,6 +68,7 @@ class File {
 
     private void testWriteToFile() {
         table.setHeader("name","age");
+        table.setType("txt","number");
         table.addTableData(new String[]{"John", "10"});
         table.addTableData(new String[]{"Mary", "13"});
         table.addTableData(new String[]{"Frank", "25"});

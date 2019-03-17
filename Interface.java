@@ -10,6 +10,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.geometry.VPos;
+import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
@@ -40,8 +41,7 @@ public class Interface extends Application{
 		createTable = new Button("Create"+"\n"+"table");
 		createTable.setOnAction(e -> {
 			InputTableName.display("Creating a Table");
-			database = new Databases();
-			start(stage);
+			refresh.fire();
 		});
 		leftLayout.getChildren().add(createTable);
 
@@ -52,11 +52,9 @@ public class Interface extends Application{
 			start(stage);
 		});
 		leftLayout.getChildren().add(refresh);
-
 		Separator sepHor = new Separator();
 		sepHor.setValignment(VPos.CENTER);
 		leftLayout.getChildren().add(sepHor);
-
 		Label label1 = new Label("Current Tables:");
 		leftLayout.getChildren().add(label1);
 
@@ -78,13 +76,16 @@ public class Interface extends Application{
 			String tablename = entry.getKey();
 			Table currentTable = entry.getValue();
 			Button button = new Button(tablename);
-			operatingTable = currentTable;
 			button.setOnAction(e -> {
 				rightLayout.getChildren().clear();
 				Label tableNameLabel = new Label(tablename);
 				rightLayout.getChildren().add(tableNameLabel);
+				Label tableKey = new Label("Key: " + labelKey(currentTable));
+				rightLayout.getChildren().add(tableKey);
 				updateRightTable(currentTable);
 				rightLayout.getChildren().add(table);
+				rightLayout.getChildren().add(showOperatingButtons());
+				operatingTable = currentTable;
 			});
 			leftLayout.getChildren().add(button);
 		}
@@ -119,6 +120,46 @@ public class Interface extends Application{
 		return records;
 	}
 
+	HBox showOperatingButtons() {
+		HBox rightLowerLayout = new HBox(10);
+		Button addRow = new Button("Add row");
+		Button deleteRow = new Button("Delete row");
+		addRow.setOnAction(e -> clickAddRow());
+		deleteRow.setOnAction(e -> clickDeleteRow());
+		rightLowerLayout.getChildren().addAll(addRow, deleteRow);
+		return rightLowerLayout;
+	}
+
+	void clickAddRow() {
+
+		InputNewRow.display(operatingTable);
+		File file = new File(operatingTable);
+		if (! file.writeToFile())
+			AlertBox.display("Error", "Error in updating the table.");
+		else {
+			refresh.fire();
+		}
+	}
+
+	void clickDeleteRow() {
+
+		InputDeleteRow.display(operatingTable);
+		File file = new File(operatingTable);
+		if (! file.writeToFile())
+			AlertBox.display("Error", "Error in updating the table.");
+		else {
+			refresh.fire();
+		}
+	}
+
+	String labelKey(Table table) {
+
+		StringBuilder key = new StringBuilder();
+		for (int i : table.getKey()) {
+			key.append(table.getHeader()[i]+" ");
+		}
+		return key.toString();
+	}
 
 }
 

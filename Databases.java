@@ -21,7 +21,9 @@ class Databases {
         Table newTable = new Table(tablename);
         List<String[]> records = readFile(file);
         newTable.setHeader(records.get(0));
-        for (int i = 1; i < records.size(); i++) {
+        newTable.setType(records.get(1));
+        newTable.setKey(getKey(records.get(2)));
+        for (int i = 3; i < records.size(); i++) {
             if (newTable.addTableData(records.get(i)));
         }
         addToDatabases(tablename, newTable);
@@ -52,6 +54,13 @@ class Databases {
         return tables;
     }
     
+    int[] getKey(String... str) {
+        int[] number = new int[str.length];
+        for (int i = 0; i < str.length; i++) {
+            number[i] = Integer.parseInt(str[i]);
+        }
+        return number;
+    }
 
 
 //	===============TESTING===============
