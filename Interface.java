@@ -124,32 +124,30 @@ public class Interface extends Application{
 		HBox rightLowerLayout = new HBox(10);
 		Button addRow = new Button("Add row");
 		Button deleteRow = new Button("Delete row");
+		Button editRow = new Button("Edit");
 		addRow.setOnAction(e -> clickAddRow());
 		deleteRow.setOnAction(e -> clickDeleteRow());
-		rightLowerLayout.getChildren().addAll(addRow, deleteRow);
+		editRow.setOnAction(e -> clickEdit());
+		rightLowerLayout.getChildren().addAll(addRow, deleteRow, editRow);
 		return rightLowerLayout;
 	}
 
 	void clickAddRow() {
 
 		InputNewRow.display(operatingTable);
-		File file = new File(operatingTable);
-		if (! file.writeToFile())
-			AlertBox.display("Error", "Error in updating the table.");
-		else {
-			refresh.fire();
-		}
+		updateFile();
 	}
 
 	void clickDeleteRow() {
 
 		InputDeleteRow.display(operatingTable);
-		File file = new File(operatingTable);
-		if (! file.writeToFile())
-			AlertBox.display("Error", "Error in updating the table.");
-		else {
-			refresh.fire();
-		}
+		updateFile();
+	}
+
+	void clickEdit() {
+		
+		InputEditRow.display(operatingTable);
+		updateFile();
 	}
 
 	String labelKey(Table table) {
@@ -159,6 +157,15 @@ public class Interface extends Application{
 			key.append(table.getHeader()[i]+" ");
 		}
 		return key.toString();
+	}
+
+	void updateFile() {
+		File file = new File(operatingTable);
+		if (! file.writeToFile())
+			AlertBox.display("Error", "Error in updating the table.");
+		else {
+			refresh.fire();
+		}
 	}
 
 }

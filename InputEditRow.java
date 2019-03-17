@@ -9,46 +9,47 @@ import javafx.event.*;
 import java.util.*;
 
 
-class InputDeleteRow {
+class InputEditRow {
 
     public static void display(Table table) {
 
         Stage window = new Stage();
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("Delete Rows");
+        window.setTitle("Edit Rows");
         window.setMinWidth(250);
 
         VBox layout = new VBox(10);
-        Label instruction = new Label("Type in records' numbers to delete:" + "\n" +
-                                    "(Use , to seperate multiple rows)");
 
+        Label instruction = new Label("Type in the record's row and column to Edit:");
         TextField input = new TextField();
         input.setPrefWidth(100);
+        Label instruction1 = new Label("Type in the new value:");
+        TextField value = new TextField();
+        value.setPrefWidth(100);
 
         HBox bottomLayout = new HBox(20);
         Button confirm = new Button("Confirm");
         Button cancel = new Button("Cancel");
         confirm.setOnAction(e -> {
-            String rowinfo = input.getText();
-            String[] toDelete = rowinfo.split(",");
-            int total = toDelete.length;
-            int[] number = new int[total];
+            String rowinfo1 = input.getText();
+            String[] toEdit = rowinfo1.split(",");
+            String toupdate = value.getText();
+            int[] position = new int[2];
             // System.out.println(table.getRecords().getRecordsNumber());
-            for (int i = 0; i < total; i++) {
-                if (isInteger(toDelete[i])){
-                    number[i] = Integer.parseInt(toDelete[i]);
+            for (int i = 0; i < 2; i++) {
+                if (isInteger(toEdit[i])){
+                    position[i] = Integer.parseInt(toEdit[i]);
                 } 
                 else {
-                    AlertBox.display("Error", "Please type in interger.");
+                    AlertBox.display("Error", "Please type in corrent number.");
                     window.close();
                 }
             }
-            if (!table.deleteRow(sortIntArray(number))) {
-                AlertBox.display("Error", "Please type in valid row numbers.");
+            if (!table.updateRow(position[0], position[1], toupdate)) {
+                AlertBox.display("Error", "Please type in valid value.");
                 window.close();
             }
-            // table.printTable();
             window.close();
         });
         // System.out.println(table.getRecords().getRecordsNumber());
@@ -56,10 +57,10 @@ class InputDeleteRow {
         bottomLayout.getChildren().addAll(confirm, cancel);
         bottomLayout.setPadding(new Insets(20,0,0,0));
 
-        layout.getChildren().addAll(instruction, input, bottomLayout);
+        layout.getChildren().addAll(instruction, input, instruction1, value, bottomLayout);
         layout.setPadding(new Insets(30,20,30,20));
 
-        Scene scene = new Scene(layout, 300, 200);
+        Scene scene = new Scene(layout, 300, 300);
         window.setScene(scene);
         window.showAndWait();
 
@@ -74,14 +75,4 @@ class InputDeleteRow {
         return true;
     }
 
-    static int[] sortIntArray(int... number) {
-        int length = number.length;
-        int[] sorted = new int[length];
-        Arrays.sort(number);
-        for (int i = length - 1; i >=0; i--) {
-            sorted[length - i - 1] = number[i];
-            // System.out.println(number[i]);
-        }
-        return sorted;
-    }
 }

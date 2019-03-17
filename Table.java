@@ -63,11 +63,17 @@ class Table {
 
 	boolean checkDataType(String... toadd) {
 		for (int i = 0; i < header.length; i++) {
-			if ((type[i].equals("number") && !checkNum(toadd[i])) ||
-				(type[i].equals("date") && !checkDate(toadd[i])) ||
-				(type[i].equals("currency") && !checkCurrency(toadd[i])))
+			if (!checkCertainDataType(toadd[i], i))
 				return false;
 		}
+		return true;
+	}
+
+	boolean checkCertainDataType(String toupdate, int i) {
+		if ((type[i].equals("number") && !checkNum(toupdate)) ||
+			(type[i].equals("date") && !checkDate(toupdate)) ||
+			(type[i].equals("currency") && !checkCurrency(toupdate)))
+				return false;
 		return true;
 	}
 
@@ -91,10 +97,19 @@ class Table {
 	}
 
 	boolean updateRow(int rownumber, int colnumber, String toupdate) {
-		if (!checkRowIndexValid(rownumber) || !checkColIndexValid(colnumber))
+
+		if (!checkRowIndexValid(rownumber) || !checkColIndexValid(colnumber) ||
+			!checkCertainDataType(toupdate,colnumber-1)){
 			return false;
-		records.updateCertainRecord(rownumber, colnumber-1, toupdate);
+		}
+		String origin = records.getCertainRecord(rownumber)[colnumber-1];
+		records.getCertainRecord(rownumber)[colnumber-1] = toupdate;
+		if (records.checkDuplicateUpdate(records.getCertainRecord(rownumber))){
+			records.updateCertainRecord(rownumber, colnumber-1, origin);
+			return false;
+		}
 		return true;
+
 	}
 
 	boolean checkRowIndexValid(int number) {

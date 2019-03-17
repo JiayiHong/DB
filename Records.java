@@ -44,6 +44,22 @@ class Records {
         return false;
     }
 
+    boolean checkDuplicateUpdate(String[] toupdate) {
+        int number = 0;
+        int count = 0;
+        // if (records == null) return false;
+        for (String[] current : records) {
+            for (int check : keys) {
+                if (toupdate[check].equals(current[check]))
+                count ++;
+            }
+            if (count == keys.length) number++;
+            count = 0;
+        }
+        if (number >= 2) return true;
+        return false;
+    }
+
     void removeCertainRecord(int number) {
         records.remove(number);
         recordNumber--;
@@ -102,6 +118,7 @@ class Records {
         assert(checkDuplicateRecord(new String[]{"Fido", "ab"}));
         assert(checkDuplicateRecord(new String[]{"Fido", "23"}));
         assert(!checkDuplicateRecord(new String[]{"Fio", "ab123"}));
+        assert(!checkDuplicateUpdate(new String[]{"Fido","ab123"}));
     }
 
 }
